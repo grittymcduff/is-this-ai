@@ -1,0 +1,7 @@
+{
+  "name": "is-this-ai-e2e",
+  "private": true,
+  "type": "module",
+  "scripts": { "test": "node run.mjs" },
+  "devDependencies": { "puppeteer-core": "^25.19.0" }
+}

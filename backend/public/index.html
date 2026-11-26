@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Is This AI?</title>
+  <link rel="icon" href="/icons/icon32.png">
+  <link rel="stylesheet" href="/ui/report.css">
+  <style>
+    body { max-width: 560px; margin: 0 auto; padding: 20px 16px 40px; }
+    h1 { font-size: 20px; }
+    .intro { color: var(--muted); margin: 4px 0 16px; }
+    textarea { min-height: 90px; resize: vertical; margin-top: 12px; }
+    .bar { display: flex; gap: 8px; margin: 8px 0 16px; }
+    .bar input { flex: 1; }
+    .actions { display: flex; justify-content: flex-end; margin: 8px 0 16px; }
+  </style>
+</head>
+<body>
+  <header class="iti-top"><img class="iti-logo" src="/icons/icon48.png" alt=""><h1>Is This AI?</h1></header>
+  <p class="intro">Check an image, video or piece of text for signs it was made with AI. Works on phones too.</p>
+  <label class="iti-drop" id="drop" tabindex="0">
+    Tap to choose a photo or video, or drop one here
+    <input type="file" id="file" accept="image/*,video/*" hidden>
+  </label>
+  <form class="bar" id="urlForm">
+    <input id="url" class="iti-field" type="url" placeholder="…or paste a direct link to an image or video" aria-label="Media link">
+    <button class="iti-btn">Check</button>
+  </form>
+  <textarea id="text" class="iti-field" placeholder="…or paste text (a few sentences at least)" aria-label="Text to check"></textarea>
+  <div class="actions"><button id="checkText" class="iti-btn" disabled>Check text</button></div>
+  <main id="report" aria-live="polite"></main>
+  <script type="module">
+    import { renderReport, renderError, renderLoading } from '/ui/render.js';
+    const root = document.getElementById('report');
+    const $ = (id) => document.getElementById(id);
+    async function send(init) {
+      renderLoading(root);
+      root.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      try {
+        const res = await fetch('/api/check', init);
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.error || `HTTP ${res.status}`);
+        renderReport(root, json);
+      } catch (err) { renderError(root, err.message); }
+    }
+    const json = (body) => ({ method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) });
+    function sendFile(file) {
+      if (!file) return;
+      const form = new FormData(); form.append('file', file, file.name);
+      send({ method: 'POST', body: form });
+    }
+    $('file').addEventListener('change', () => sendFile($('file').files[0]));
+    const drop = $('drop');
+    drop.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); $('file').click(); } });
+    drop.addEventListener('dragover', (e) => { e.preventDefault(); drop.classList.add('is-over'); });
+    drop.addEventListener('dragleave', () => drop.classList.remove('is-over'));
+    drop.addEventListener('drop', (e) => { e.preventDefault(); drop.classList.remove('is-over'); sendFile(e.dataTransfer.files[0]); });
+    $('urlForm').addEventListener('submit', (e) => { e.preventDefault(); if ($('url').value) send(json({ url: $('url').value })); });
+    $('text').addEventListener('input', () => { $('checkText').disabled = $('text').value.trim().length < 40; });
+    $('checkText').addEventListener('click', () => send(json({ text: $('text').value })));
+  </script>
+</body>
+</html>

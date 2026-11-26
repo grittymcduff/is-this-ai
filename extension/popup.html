@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Is This AI?</title>
+  <link rel="stylesheet" href="ui/report.css">
+  <style>
+    body { width: 380px; padding: 14px; }
+    .row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    textarea { min-height: 70px; resize: vertical; margin-top: 10px; }
+    .actions { display: flex; justify-content: flex-end; margin: 8px 0 12px; }
+    .tip { font-size: 12px; color: var(--muted); margin: 0 0 12px; }
+  </style>
+</head>
+<body>
+  <div class="row">
+    <header class="iti-top" style="margin:0"><img class="iti-logo" src="icons/icon48.png" alt=""><h1>Is This AI?</h1></header>
+    <a href="options.html" target="_blank" class="iti-status" id="status"><span class="iti-dot"></span><span>Checking backend…</span></a>
+  </div>
+  <p class="tip">Tip: right-click any image, video, link or selected text on a page.</p>
+  <label class="iti-drop" id="drop" tabindex="0">
+    Drop an image or video here, or click to choose
+    <input type="file" id="file" accept="image/*,video/*" hidden>
+  </label>
+  <textarea id="text" class="iti-field" placeholder="…or paste text to check"></textarea>
+  <div class="actions"><button id="checkText" class="iti-btn" disabled>Check text</button></div>
+  <main id="report" aria-live="polite"></main>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>

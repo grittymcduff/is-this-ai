@@ -1,0 +1,23 @@
+{
+  "name": "is-this-ai-backend",
+  "version": "0.1.0",
+  "description": "Is This AI? proof-of-concept detection API",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node --env-file-if-exists=.env src/server.js",
+    "test": "node --test \"test/*.test.js\"",
+    "fixtures": "node scripts/make-fixtures.mjs"
+  },
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@contentauth/c2pa-node": "^0.12.2",
+    "exifr": "^7.1.3",
+    "express": "^5.3.0",
+    "multer": "^2.5.0"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=22.23.4"
+  },
+  "private": true
+}
